@@ -1,30 +1,3 @@
-"""
-Задание: Написать класс студент.
-В студенте должны быть следующие поля:
-1) Фио - DONE
- - Проверить, что в ФИО содержится более 3-х слов
- - Проверить, что ФИО - строка
-2) Оценка - DONE
- - Проверить, что оценка - число
- - Проверить, что оценка находится в диапазоне от 1 до 12 (Включительно)
-3) Почта - DONE
- - Проверить, что почта - строка
- - Сделать валидацию для почты (Можно использовать regex или метод find в Python)
-4) Пароль - DONE
- - Проверить, что пароль - строка
- - Длина пароля >= 8
- - Есть спец. символ в пароле
- - Есть большая и маленькая буква
- - Есть число
-5) Подтверждение пароля - DONE
- - Проверить, что значение - строка
- - Подтверждение пароля должно совпадать с паролем
-6) Посещаемость пар - DONE
- - Проверить, что значение - число
- - Посещаемость должна задаваться в процентах, в диапазоне от 0 до 100%
-Все поля в классе должны быть реализованы через property
-В качестве выполненного ДЗ отправить ссылку на репозиторий на GitHub
-"""
 import re
 
 
@@ -132,3 +105,79 @@ class Student:
             self._attendance = value
         else:
             raise ValueError('name должен быть типом данных str и записан в формате Фамилия Имя Отчество.')
+
+
+class StudentsGroup:
+
+    def __init__(self):
+        self.group = []
+
+    def create_student(self, name, grade, email, password, confirm_password, attendance):
+        try:
+            student = Student(name, grade, email, password, confirm_password, attendance)
+        except ValueError as e:
+            print(e)
+            return False
+        if self.search_student(email) is None:
+            self.group.append(student)
+            return True
+        else:
+            print("Студент с таким email уже есть!")
+            return False
+
+    def search_student(self, mail):
+        for i in range(len(self.group)):
+            if mail == self.group[i]:
+                return i
+        print("Нет такого студента!")
+        return None
+
+    def edit_student(self, search_mail, name, grade, email, password, confirm_password, attendance):
+        student_id = self.search_student(search_mail)
+        if student_id is None:
+            return False
+        student = self.group[student_id]
+        student.name = name
+        student.grade = grade
+        student.email = email
+        student.password = password
+        student.confirm_password = confirm_password
+        student.attendance = attendance
+        return True
+
+    def show_students(self):
+        return "\n".join([f"{x.name}\n" \
+                          f"{x.grade}\n" \
+                          f"{x.email}\n" \
+                          f"{x.attendance}\n"
+                          for x in self.group])
+
+    def delete_students(self, search_mail):
+        student = self.search_student(search_mail)
+        if student is None:
+            return False
+        self.group.pop(student)
+        return True
+
+    def show_student(self, search_mail):
+        student_id = self.search_student(search_mail)
+        if student_id is None:
+            return False
+        student = self.group[student_id]
+        return f"{student.name}" \
+               f"{student.email}" \
+               f"{student.grade}" \
+               f"{student.attendance}" \
+
+
+    def show_students_grades(self, n):
+        filter_students_grades = []
+        for i in range(len(self.group)):
+            if self.group[i].grade >= n:
+                filter_students_grades.append(f"{self.group[i].name}, {self.group[i].email}, {self.group[i].grade}, "
+                                              f"{self.group[i].attendance}")
+        if len(filter_students_grades) == 0:
+            print("Студенты не найдены!")
+        else:
+            print(x for x in filter_students_grades)
+            return filter_students_grades
